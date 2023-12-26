@@ -3,19 +3,20 @@ package com.labcenter.pool;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
 @ApplicationScoped
 public class JpaPool {
-    private final EntityManagerFactory entityManagerFactory;
-    private final Queue<EntityManager> pool;
+    private EntityManagerFactory entityManagerFactory;
+    private Queue<EntityManager> pool;
     private long startTime;
     private long maxTime;
-
-    public JpaPool() {
+    @PostConstruct
+    public void init() {
         this.entityManagerFactory = Persistence.createEntityManagerFactory("jpa");
         this.pool = new LinkedList<>();
         this.startTime = new Date().getTime();
@@ -29,7 +30,7 @@ public class JpaPool {
 
     public EntityManager getConnection() {
 
-        var count = poolSize();
+        var count = pool.size();
         var now = new Date().getTime();
         if (maxTime > now) {
             switch (count) {

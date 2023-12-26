@@ -1,5 +1,7 @@
 package com.labcenter.auth;
 
+import java.util.logging.Logger;
+
 import com.labcenter.security.JwtUtil;
 
 import jakarta.inject.Inject;
@@ -12,6 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("auth")
 public class AuthControl {
+    private final Logger log = Logger.getLogger(AuthControl.class.getName());
     @Inject
     private UserBoundary userBoundary;
     @Inject
@@ -23,7 +26,7 @@ public class AuthControl {
     @Consumes({ MediaType.APPLICATION_JSON })
     public String login(@Valid User user) {
         userBoundary.persist(user);
-        System.out.println(user.getRoles());
+        log.info(user.toString());
         return jwt.generateToken(user.getUsername(), user.getRoles());
     }
 
