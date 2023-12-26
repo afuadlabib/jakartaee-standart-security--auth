@@ -5,41 +5,44 @@ import com.labcenter.auth.User;
 import com.labcenter.auth.UserBoundary;
 import com.labcenter.pool.JpaPool;
 
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.control.RequestContextController;
 import jakarta.inject.Inject;
 import java.util.List;
 
 import org.jboss.weld.junit5.WeldInitiator;
-import org.jboss.weld.junit5.WeldJunit5Extension;
+import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldSetup;
-import org.jboss.weld.junit5.auto.ActivateScopes;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 
-@ActivateScopes(value = RequestScoped.class)
-@ExtendWith(WeldJunit5Extension.class)
+@EnableWeld
 public class UserTest {
-    
 
     @WeldSetup
-    public WeldInitiator weld = WeldInitiator.from( JpaPool.class,UserBoundary.class).build();
+    public WeldInitiator weld = WeldInitiator.from(JpaPool.class, UserBoundary.class).build();
+    @Inject
+    private RequestContextController requestContextController;
     @Inject
     UserBoundary userBoundary;
+
     @Test
     public void persistUser() {
-        User user = new User();
-        List<Role> lr = new ArrayList<>();
-        lr.add(Role.ADMIN);
-        lr.add(Role.USER);
-        user.setEmail("emailuser@mail.com");
-        user.setUsername("username");
-        user.setRoles(lr);
+            requestContextController.activate();
+            User user = new User();
+            List<Role> lr = new ArrayList<>();
+            lr.add(Role.ADMIN);
+            lr.add(Role.USER);
+            user.setEmail("emailuser@mail.com");
+            user.setPassword("password");
+            user.setUsername("username");
+            user.setRoles(lr);
 
-        userBoundary.persist(user);
-        System.out.println(user.getId() + " <<<<");
-        assertEquals("username", user.getUsername());
+            userBoundary.persist(user);
+            System.out.println(user.getId() + " <<<<");
+            assertEquals("username", user.getUsername());
+            requestContextController.deactivate();
+
     }
 }

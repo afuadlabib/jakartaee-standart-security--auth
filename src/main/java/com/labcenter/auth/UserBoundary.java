@@ -5,13 +5,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import com.labcenter.pool.JpaPool;
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
-@ApplicationScoped
+@RequestScoped
 public class UserBoundary {
     @Inject
     private JpaPool emp;
